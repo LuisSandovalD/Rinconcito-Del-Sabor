@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PERMISSIONS } from "@/lib/permissions";
+import { PERMISSIONS } from "../src/lib/permissions";
 
 describe("project foundation", () => {
   it("keeps permission codes unique", () => {
