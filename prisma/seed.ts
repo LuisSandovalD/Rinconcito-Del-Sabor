@@ -4,10 +4,13 @@ import { PrismaClient } from "../generated/prisma/client";
 import { PERMISSIONS } from "../src/lib/permissions";
 
 const url = process.env.DATABASE_URL;
-const adminPassword = process.env.SEED_ADMIN_PASSWORD;
-
 if (!url) throw new Error("DATABASE_URL es obligatorio para ejecutar el seed.");
-if (!adminPassword || adminPassword.length < 12) throw new Error("SEED_ADMIN_PASSWORD debe tener al menos 12 caracteres.");
+
+function getAdminPassword(): string {
+  const value = process.env.SEED_ADMIN_PASSWORD;
+  if (!value || value.length < 12) throw new Error("SEED_ADMIN_PASSWORD debe tener al menos 12 caracteres.");
+  return value;
+}
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: url }) });
 
@@ -29,7 +32,7 @@ async function main() {
     skipDuplicates: true
   });
 
-  const passwordHash = await argon2.hash(adminPassword, { type: argon2.argon2id });
+  const passwordHash = await argon2.hash(getAdminPassword(), { type: argon2.argon2id });
   const admin = await db.user.upsert({
     where: { email: "admin@rinconcitodelsabor.local" },
     update: {},
